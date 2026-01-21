@@ -1,0 +1,83 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Tumblr Mini Game</title>
+<style>
+/* Copy all your CSS here from .box_game, .tumblr-game, .star etc. */
+body { margin:0; padding:0; }
+.tumblr-game { 
+  position: relative; 
+  width: 260px; 
+  height: 360px; 
+  overflow: hidden; 
+  background:#fff;
+}
+/* ... rest of CSS from your previous code ... */
+</style>
+</head>
+<body>
+
+<div class="tumblr-game">
+  <div class="game-top">
+    Score: <span class="score">0</span> |
+    Time: <span class="time">30</span>
+  </div>
+  <div class="game-play"></div>
+  <div class="game-overlay">
+    <button class="game-start">Start</button>
+  </div>
+</div>
+
+<script>
+/* Copy your JS code here from before */
+(function(){
+  var box = document.querySelector(".tumblr-game");
+  var play = box.querySelector(".game-play");
+  var scoreEl = box.querySelector(".score");
+  var timeEl = box.querySelector(".time");
+  var overlay = box.querySelector(".game-overlay");
+  var startBtn = box.querySelector(".game-start");
+  var score=0, time=30, playing=false, timer, spawnInterval;
+
+  function spawnStar(){
+    if(!playing) return;
+    var star = document.createElement("div");
+    star.className="star";
+    star.textContent="⭐";
+    star.style.left = Math.random()*(play.clientWidth-22)+"px";
+    star.style.top="-30px";
+    star.onclick=function(){ score++; scoreEl.textContent=score; star.remove(); };
+    play.appendChild(star);
+    var duration = 2000 + Math.random()*2000;
+    var start = null;
+    function animate(timestamp){
+      if(!start) start = timestamp;
+      var progress = timestamp - start;
+      var percent = progress/duration;
+      if(percent>1) percent=1;
+      star.style.top = (-30 + percent*280) + "px";
+      if(percent < 1) requestAnimationFrame(animate);
+      else star.remove();
+    }
+    requestAnimationFrame(animate);
+  }
+
+  startBtn.onclick=function(){
+    score=0; time=30; playing=true;
+    scoreEl.textContent=score; timeEl.textContent=time;
+    play.innerHTML="";
+    overlay.style.display="none";
+    overlay.style.pointerEvents="none";
+    spawnInterval=setInterval(spawnStar, 400);
+    timer=setInterval(function(){
+      time--;
+      timeEl.textContent=time;
+      if(time<=0){ playing=false; clearInterval(timer); clearInterval(spawnInterval); play.innerHTML=""; overlay.style.display="flex"; overlay.style.pointerEvents="auto"; }
+    },1000);
+  };
+})();
+</script>
+
+</body>
+</html>
